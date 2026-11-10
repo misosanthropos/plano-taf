@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Plano para o TAF</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F2F3EF;--surface:#FFFFFF;--surface-2:#E7EAE3;--ink:#15202B;--ink-2:#4E5A63;--ink-3:#808A91;--line:#D5D9D1;
+  --run:#0F7C66;--run-bg:#DDF1EA;--lift:#5546C2;--lift-bg:#E9E6FC;--taf:#C9481A;--taf-bg:#FBE4D8;
+  --accent:#1E3A5F;--accent-ink:#FFFFFF;--glow:rgba(30,58,95,.32);--warn-bg:#FFF2D2;--warn-ink:#5E4300;
+  --ok-bg:#DDF1EA;--ok-ink:#0B5D4C;--danger:#B42318;
+  color-scheme:light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E1419;--surface:#161E25;--surface-2:#222C35;--ink:#E9EDF0;--ink-2:#AAB4BB;--ink-3:#7D888F;--line:#2C3842;
+    --run:#4FD1AE;--run-bg:#113A31;--lift:#A99EF7;--lift-bg:#2B2659;--taf:#FF8A50;--taf-bg:#4A2414;
+    --accent:#8DB4E8;--accent-ink:#0E1419;--glow:rgba(141,180,232,.32);--warn-bg:#3A2E10;--warn-ink:#F3D58A;
+    --ok-bg:#113A31;--ok-ink:#7FE3C4;--danger:#FF8A80;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E1419;--surface:#161E25;--surface-2:#222C35;--ink:#E9EDF0;--ink-2:#AAB4BB;--ink-3:#7D888F;--line:#2C3842;
+  --run:#4FD1AE;--run-bg:#113A31;--lift:#A99EF7;--lift-bg:#2B2659;--taf:#FF8A50;--taf-bg:#4A2414;
+  --accent:#8DB4E8;--accent-ink:#0E1419;--glow:rgba(141,180,232,.32);--warn-bg:#3A2E10;--warn-ink:#F3D58A;
+  --ok-bg:#113A31;--ok-ink:#7FE3C4;--danger:#FF8A80;
+  color-scheme:dark;
+}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font-family:"Archivo",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+main{max-width:560px;margin:0 auto;padding:24px 16px 48px}
+h1,h2,h3{margin:0;font-stretch:78%;letter-spacing:-.005em}
+h1{font-size:30px;font-weight:760;line-height:1.05}
+h2{font-size:21px;font-weight:700;line-height:1.15}
+.sub{color:var(--ink-2);margin:6px 0 0;font-size:15px}
+section{margin-top:20px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px}
+.muted{color:var(--ink-2)}
+.fine{color:var(--ink-3);font-size:13px;margin:8px 0 0}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.hero{padding:20px 18px 18px}
+.hero .when{font-size:14px;color:var(--ink-2);margin:0}
+.hero .what{font-size:30px;font-stretch:68%;font-weight:780;line-height:1.06;margin:6px 0 10px;text-wrap:balance}
+.hero .notes p{margin:6px 0 0;color:var(--ink-2);font-size:15px}
+.phase{font-size:14px;color:var(--ink-2);margin:12px 0 0}
+.lane{position:relative;display:flex;gap:3px;height:12px;margin:16px 0 6px}
+.seg{position:relative;height:100%;border-radius:4px;background:var(--surface-2);overflow:hidden}
+.seg.pol{background:var(--taf-bg)}
+.seg .fill{position:absolute;inset:0 auto 0 0;width:0;background:var(--accent);transition:width .9s cubic-bezier(.2,.7,.2,1)}
+.lanelabels{display:flex;gap:3px;font-size:12px;color:var(--ink-3)}
+.lanelabels span{white-space:nowrap;overflow:hidden}
+.count{display:flex;align-items:baseline;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+.count b{font-size:30px;font-stretch:70%;font-weight:780;line-height:1}
+.count span{color:var(--ink-2);font-size:15px}
+
+.tag{display:inline-block;font-size:13px;font-weight:600;padding:3px 10px;border-radius:999px}
+.tag.run{background:var(--run-bg);color:var(--run)}
+.tag.lift{background:var(--lift-bg);color:var(--lift)}
+.tag.rest{background:var(--surface-2);color:var(--ink-2)}
+.tag.taf{background:var(--taf-bg);color:var(--taf)}
+
+.test{margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+.test:first-of-type{margin-top:12px;padding-top:0;border-top:0}
+.test h3{font-size:16px;font-weight:700}
+.test .goal{font-size:13px;color:var(--ink-3);margin:2px 0 0}
+.row{display:flex;gap:8px;margin-top:10px;align-items:center}
+input[type=number]{width:100%;min-width:0;height:46px;border:1px solid var(--line);border-radius:12px;background:var(--bg);color:var(--ink);padding:0 12px;font:inherit;font-variant-numeric:tabular-nums}
+.unit{color:var(--ink-3);font-size:14px;white-space:nowrap}
+.btn{height:46px;border-radius:12px;border:1px solid var(--line);background:transparent;padding:0 16px;font-weight:600;white-space:nowrap;transition:background-color .15s,box-shadow .2s}
+.btn:hover{background:var(--surface-2)}
+.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);box-shadow:0 6px 20px -8px var(--glow)}
+.primary:hover{background:var(--accent);box-shadow:0 0 0 4px var(--glow),0 8px 24px -8px var(--glow)}
+.linkbtn{background:none;border:0;padding:0;margin-top:10px;color:var(--ink-2);text-decoration:underline;text-underline-offset:3px;font-size:14px}
+.verdict{border-radius:12px;padding:12px 14px;margin-top:10px;font-size:14px}
+.verdict.ok{background:var(--ok-bg);color:var(--ok-ink)}
+.verdict.warn{background:var(--warn-bg);color:var(--warn-ink)}
+.err{color:var(--danger);font-size:14px;margin:8px 0 0}
+
+.calnav{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.calnav h2{flex:1;font-size:19px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.icon{width:40px;height:40px;border-radius:10px;border:1px solid var(--line);background:transparent;font-size:18px;line-height:1}
+.icon:hover{background:var(--surface-2)}
+.grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+.wd{font-size:12px;color:var(--ink-3);text-align:center;padding:2px 0 6px}
+.cell{height:52px;border:0;border-radius:10px;background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;font-size:15px;font-variant-numeric:tabular-nums;min-width:0;padding:0;transition:background-color .15s}
+.cell:hover{background:var(--surface-2)}
+.cell .bar{width:18px;height:4px;border-radius:2px;background:transparent}
+.cell.run .bar{background:var(--run)}
+.cell.lift .bar{background:var(--lift)}
+.cell.taf{color:var(--taf);font-weight:700}
+.cell.taf .bar{background:var(--taf);width:24px}
+.cell.today{box-shadow:inset 0 0 0 1.5px var(--ink-3)}
+.cell[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.cell.off{color:var(--ink-3);opacity:.45;cursor:default}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:12px;font-size:13px;color:var(--ink-2)}
+.legend i{display:inline-block;width:14px;height:4px;border-radius:2px;margin-right:6px;vertical-align:middle}
+
+.detail{margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+.detail h3{font-size:20px;font-weight:700}
+.detail .ph{font-size:14px;color:var(--ink-2);margin:2px 0 10px}
+.detail .x{font-size:18px;margin:10px 0 0;line-height:1.4}
+.detail .n{font-size:14px;color:var(--ink-2);margin:6px 0 0}
+.detail.swap{animation:swap .25s ease-out}
+@keyframes swap{from{opacity:.2;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+.goals{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
+.goal2{background:var(--bg);border-radius:12px;padding:12px}
+.goal2 p{margin:0;font-size:13px;color:var(--ink-2)}
+.goal2 b{display:block;font-size:20px;font-stretch:72%;font-weight:760;margin-top:2px}
+.goal2 small{display:block;font-size:12px;color:var(--ink-3);margin-top:2px}
+
+.paces{width:100%;border-collapse:collapse;margin-top:12px;font-size:14px}
+.paces th,.paces td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line)}
+.paces th{font-size:12px;color:var(--ink-3);font-weight:600}
+.paces td:last-child{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.paces tr:last-child td{border-bottom:0}
+
+.hero-in{animation:rise .5s cubic-bezier(.2,.7,.2,1) both}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion: reduce){
+  .hero-in,.detail.swap{animation:none}
+  .seg .fill,.btn,.cell{transition:none}
+}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Plano para o TAF</h1>
+    <p class="sub">Soldado PM SP &middot; 30 de novembro &middot; foco em corrida e abdominal</p>
+  </header>
+
+  <section class="card hero hero-in" aria-live="polite">
+    <p class="when" id="hWhen"></p>
+    <p class="what" id="hWhat"></p>
+    <span class="tag" id="hTag"></span>
+    <div class="notes" id="hNotes"></div>
+    <p class="phase" id="hPhase"></p>
+    <div class="lane" id="lane" aria-hidden="true"></div>
+    <div class="lanelabels" id="laneLabels" aria-hidden="true"></div>
+    <div class="count" id="count"></div>
+  </section>
+
+  <section class="card">
+    <h2>Testes</h2>
+    <p class="muted" style="margin:6px 0 0;font-size:15px">Salve os resultados aqui. Eles dizem se as velocidades do plano precisam mudar.</p>
+
+    <div class="test">
+      <h3>Abdominal remador</h3>
+      <p class="goal">Teste em 10/11 &middot; m&iacute;nimo do TAF: 36 em 1 minuto</p>
+      <div class="row">
+        <input type="number" id="abInput" min="0" max="120" step="1" inputmode="numeric" placeholder="0" aria-label="Repeti&ccedil;&otilde;es em 1 minuto">
+        <span class="unit">em 1 min</span>
+        <button class="btn primary" id="abSave">Salvar</button>
+      </div>
+      <p class="err" id="abErr" role="alert"></p>
+      <div id="abOut"></div>
+    </div>
+
+    <div class="test">
+      <h3>2.400 m</h3>
+      <p class="goal">Teste em 12/11 &middot; limite: 13'00" &middot; meta: 12'00"</p>
+      <div class="row">
+        <input type="number" id="rmInput" min="5" max="30" step="1" inputmode="numeric" placeholder="13" aria-label="Minutos">
+        <span class="unit">min</span>
+        <input type="number" id="rsInput" min="0" max="59" step="1" inputmode="numeric" placeholder="20" aria-label="Segundos">
+        <span class="unit">s</span>
+        <button class="btn primary" id="rSave">Salvar</button>
+      </div>
+      <p class="err" id="rErr" role="alert"></p>
+      <div id="rOut"></div>
+    </div>
+
+    <button class="linkbtn" id="clearBtn" hidden>Limpar resultados</button>
+    <p class="fine">Os resultados ficam salvos neste aparelho.</p>
+  </section>
+
+  <section class="card">
+    <div class="calnav">
+      <button class="icon" id="prevBtn" aria-label="M&ecirc;s anterior">&#8249;</button>
+      <h2 id="monthLabel"></h2>
+      <button class="btn" id="todayBtn" style="height:40px;padding:0 12px">Hoje</button>
+      <button class="icon" id="nextBtn" aria-label="Pr&oacute;ximo m&ecirc;s">&#8250;</button>
+    </div>
+    <div class="grid">
+      <div class="wd">Seg</div><div class="wd">Ter</div><div class="wd">Qua</div><div class="wd">Qui</div><div class="wd">Sex</div><div class="wd">S&aacute;b</div><div class="wd">Dom</div>
+    </div>
+    <div class="grid" id="grid"></div>
+    <div class="legend">
+      <span><i style="background:var(--run)"></i>Corrida</span>
+      <span><i style="background:var(--lift)"></i>Abdominal e for&ccedil;a</span>
+      <span><i style="background:var(--taf)"></i>TAF</span>
+      <span>Sem barra: descanso</span>
+    </div>
+    <div class="detail" id="detail" aria-live="polite"></div>
+  </section>
+
+  <section class="card">
+    <h2>Velocidades na esteira</h2>
+    <table class="paces">
+      <tr><th>Treino</th><th>Ritmo</th><th>Esteira</th></tr>
+      <tr><td>Trote e cont&iacute;nuo leve</td><td>6'40"&ndash;7'30"/km</td><td>8,0&ndash;9,0 km/h</td></tr>
+      <tr><td>Tiros de 1 min</td><td>6'00"/km</td><td>10,0 km/h</td></tr>
+      <tr><td>Tiros de 400 m, ritmo do m&iacute;nimo</td><td>2'10" por volta</td><td>11,1 km/h</td></tr>
+      <tr><td>Tiros de 400 m, acima do ritmo</td><td>2'05" por volta</td><td>11,5 km/h</td></tr>
+      <tr><td>2.400 m em 13'00" (limite)</td><td>2'10" por volta</td><td>11,1 km/h</td></tr>
+      <tr><td>2.400 m em 12'00" (meta)</td><td>2'00" por volta</td><td>12,0 km/h</td></tr>
+    </table>
+    <p class="fine">Deixe a inclina&ccedil;&atilde;o em 1% para se aproximar da corrida na pista.</p>
+  </section>
+
+  <section class="card">
+    <h2>&Iacute;ndices m&iacute;nimos</h2>
+    <div class="goals">
+      <div class="goal2"><p>Barra fixa</p><b>3 reps</b><small>Ponto forte, sem treino espec&iacute;fico</small></div>
+      <div class="goal2"><p>Abdominal remador</p><b>36 em 1 min</b><small>Prioridade do plano</small></div>
+      <div class="goal2"><p>Corrida de 50 m</p><b>at&eacute; 8"25</b></div>
+      <div class="goal2"><p>Corrida de 2.400 m</p><b>at&eacute; 13'00"</b><small>Prioridade do plano</small></div>
+    </div>
+    <p class="fine">No dia, a ordem &eacute; barra, abdominal, 50 m e 2.400 m. A corrida de 2.400 m n&atilde;o tem segunda tentativa. Leve o atestado m&eacute;dico emitido nos 45 dias anteriores e confirme os &iacute;ndices no Anexo D do edital.</p>
+  </section>
+</main>
+
+<script>
+const TAF=new Date(2026,10,30),MIN=new Date(2026,10,10),MAX=new Date(2026,11,6);
+const DD=(a,b)=>Math.round((a-b)/864e5);
+const add=(d,n)=>new Date(d.getFullYear(),d.getMonth(),d.getDate()+n);
+const K=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const parse=s=>{const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(s||'');return m?new Date(+m[1],+m[2]-1,+m[3]):null};
+const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
+const longDate=d=>d.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'});
+const today=(()=>{const n=new Date();return new Date(n.getFullYear(),n.getMonth(),n.getDate())})();
+const TY={c:['Corrida','run'],m:['Abdominal e força','lift'],d:['Descanso','rest'],t:['TAF','taf']};
+const SIM='Ordem do TAF: barra, abdominal, 50 m e 2.400 m, com pausas curtas entre as provas.';
+const RACE='Ritmo dos 2.400 m: 2\'10" por volta (11,1 km/h) passa no limite de 13\'00"; 2\'00" por volta (12,0 km/h) fecha em 12\'00". Não largue forte.';
+
+const DAYS={
+'2026-11-10':{t:'c',x:'Trote de 20 min a 8,0 km/h + teste de abdominal remador',n:['Trote leve, inclinação 1%. Hoje é retomada depois do resfriado, não treino forte.','Teste: conte quantos remadores você faz em 1 minuto e salve acima.']},
+'2026-11-11':{t:'c',x:'6×(1 min a 10,0 km/h / 2 min andando a 4,5) + 3×30 s de remador',n:['Primeiro contato com ritmo alto. Se não segurar o minuto inteiro, baixe para 9,5.','Remador em cadência constante, sem acelerar no começo.']},
+'2026-11-12':{t:'c',x:'Teste de 2.400 m no melhor ritmo que aguentar',n:['Seis voltas de 400 m, ou 2,4 km na esteira. Comece em 10,5 km/h e ajuste pela sensação.','Anote o tempo e salve acima: ele define as velocidades das semanas 2 e 3.']},
+'2026-11-13':{t:'m',x:'Pernas leve + 4 séries de 25 remadores',n:['Agachamento, afundo e panturrilha: 2 séries cada, com 2 repetições de reserva.','Descanso de 1 min entre as séries de remador.']},
+'2026-11-14':{t:'d',x:'Descanso',n:[]},
+'2026-11-15':{t:'c',x:'Corrida contínua de 25 min a 8,0–9,0 km/h',n:['Sem parar. O objetivo é tempo correndo, não velocidade.','Feriado da Proclamação da República: confira o horário da academia.']},
+'2026-11-16':{t:'c',x:'5 tiros de 400 m a 11,1 km/h, pausa de 90 s andando',n:['11,1 km/h é o ritmo exato do limite de 13\'00". É o treino mais importante da semana.']},
+'2026-11-17':{t:'m',x:'Pernas leve + 4 séries de 30 remadores',n:['Sem falha. As pernas precisam estar boas na quarta.']},
+'2026-11-18':{t:'c',x:'Corrida contínua de 25 a 30 min a 9,0 km/h',n:['Se os 30 min saírem inteiros, você está pronto para o simulado de domingo.']},
+'2026-11-19':{t:'c',x:'6 tiros de 400 m a 11,5 km/h, pausa de 90 s',n:['Acima do ritmo de prova. Se travar no quarto tiro, volte para 11,1 nos que faltam.']},
+'2026-11-20':{t:'m',x:'Core + 4 séries de 30 remadores',n:['Prancha 3×30–45 s e prancha lateral 3×20–30 s por lado.','Feriado da Consciência Negra: confira o horário da academia.']},
+'2026-11-21':{t:'d',x:'Descanso',n:[]},
+'2026-11-22':{t:'c',x:'Simulado completo do TAF',n:[SIM,RACE,'Ensaio geral: anote o tempo dos 2.400 m e o número de remadores e salve acima.']},
+'2026-11-23':{t:'c',x:'4 tiros de 400 m a 11,1 km/h, pausa de 90 s',n:['Começa o polimento: menos volume, mesma intensidade.']},
+'2026-11-24':{t:'m',x:'3 séries de 30 remadores, leve + mobilidade',n:['Nada pesado de pernas daqui até a prova.']},
+'2026-11-25':{t:'c',x:'Trote de 20 min + 3 tiros de 50 m fortes',n:['Os 50 m servem para acordar a passada. A meta do teste é 8"25.']},
+'2026-11-26':{t:'m',x:'Mobilidade + 2 séries de 20 remadores',n:['10 min: quadril (90/90), agachamento apoiado e tornozelo na parede.']},
+'2026-11-27':{t:'c',x:'Trote leve de 15 min',n:['Último estímulo. Termine com a sensação de que sobrou.']},
+'2026-11-28':{t:'d',x:'Descanso',n:[]},
+'2026-11-29':{t:'d',x:'Descanso. Separe documento, atestado e roupa',n:['Durma cedo. Jantar normal, nada diferente do que você come sempre.']},
+'2026-11-30':{t:'t',x:'Dia do TAF: barra, abdominal, 50 m e 2.400 m',n:['Leve o atestado médico emitido nos 45 dias anteriores.',RACE]}
+};
+const PHASES=[
+  {a:'2026-11-10',b:'2026-11-15',l:'Retomada',ph:'Semana 1 de 3: retomada e diagnóstico'},
+  {a:'2026-11-16',b:'2026-11-22',l:'Ritmo',ph:'Semana 2 de 3: ritmo de prova'},
+  {a:'2026-11-23',b:'2026-11-29',l:'Polimento',ph:'Semana 3 de 3: polimento',pol:true},
+  {a:'2026-11-30',b:'2026-11-30',l:'TAF',ph:'Dia da prova',pol:true}
+];
+const LSK='plano-taf-pmsp:v2';
+
+let sel=null,cm=null,firstPaint=true,res={};
+
+function plan(d){
+  const k=K(d),e=DAYS[k];
+  if(e){
+    const p=PHASES.find(s=>k>=s.a&&k<=s.b);
+    return{t:e.t,x:e.x,n:e.n.slice(),ph:p?p.ph:''};
+  }
+  if(d<MIN)return{t:'d',x:'Antes do plano de 20 dias',n:[],ph:'O plano começa em 10 de novembro'};
+  return{t:'d',x:'Recuperação: descanso ou caminhada leve',n:[],ph:'Depois do TAF'};
+}
+
+function el(tag,cls,text){const e=document.createElement(tag);if(cls)e.className=cls;if(text!=null)e.textContent=text;return e}
+
+function renderHero(){
+  const base=today<MIN?MIN:today>MAX?MAX:today;
+  const p=plan(base);
+  document.getElementById('hWhen').textContent=(today<MIN?'O plano começa em ':'Hoje, ')+longDate(base);
+  const what=document.getElementById('hWhat'),tag=document.getElementById('hTag'),notes=document.getElementById('hNotes');
+  notes.replaceChildren();
+  what.textContent=p.x;
+  tag.className='tag '+TY[p.t][1];tag.textContent=TY[p.t][0];
+  p.n.forEach(s=>notes.append(el('p',null,s)));
+  document.getElementById('hPhase').textContent=p.ph;
+  renderLane();
+  const c=document.getElementById('count');c.replaceChildren();
+  const k=DD(TAF,today);
+  if(k>1)c.append(el('b',null,String(k)),el('span',null,'dias até o TAF, em 30/11/2026'));
+  else if(k===1)c.append(el('b',null,'Amanhã'),el('span',null,'é o dia do TAF'));
+  else if(k===0)c.append(el('b',null,'Hoje'),el('span',null,'é o dia do TAF'));
+  else c.append(el('b',null,'Feito'),el('span',null,'o TAF foi em 30/11/2026'));
+}
+
+function renderLane(){
+  const total=DD(TAF,MIN)+1,lane=document.getElementById('lane'),labels=document.getElementById('laneLabels');
+  lane.replaceChildren();labels.replaceChildren();
+  PHASES.forEach(s=>{
+    const a=parse(s.a),b=parse(s.b),days=DD(b,a)+1,share=days/total;
+    const seg=el('div','seg'+(s.pol?' pol':''));seg.style.flex=days+' 1 0';
+    const fill=el('div','fill');seg.append(fill);lane.append(seg);
+    const done=Math.max(0,Math.min(days,DD(today,a)+1));
+    const pct=(done/days*100)+'%';
+    if(firstPaint&&!matchMedia('(prefers-reduced-motion: reduce)').matches){requestAnimationFrame(()=>requestAnimationFrame(()=>{fill.style.width=pct}))}
+    else{fill.style.transition='none';fill.style.width=pct}
+    const lab=el('span',null,share>.12?s.l:'');lab.style.flex=days+' 1 0';labels.append(lab);
+  });
+  firstPaint=false;
+}
+
+function renderCal(){
+  const y=cm.getFullYear(),mo=cm.getMonth(),first=new Date(y,mo,1),off=(first.getDay()+6)%7,len=new Date(y,mo+1,0).getDate();
+  document.getElementById('monthLabel').textContent=cap(first.toLocaleDateString('pt-BR',{month:'long'}))+' '+y;
+  const g=document.getElementById('grid');g.replaceChildren();
+  for(let i=0;i<off;i++)g.append(el('div'));
+  for(let day=1;day<=len;day++){
+    const d=new Date(y,mo,day);
+    if(!DAYS[K(d)]){const s=el('div','cell off');s.append(el('span',null,String(day)),el('span','bar'));g.append(s);continue}
+    const p=plan(d),b=el('button','cell '+TY[p.t][1]+(K(d)===K(today)?' today':''));
+    b.dataset.k=K(d);b.setAttribute('aria-pressed',String(K(d)===K(sel)));
+    b.setAttribute('aria-label',cap(longDate(d))+', '+TY[p.t][0]);
+    b.append(el('span',null,String(day)),el('span','bar'));g.append(b);
+  }
+  renderDetail();
+}
+
+function renderDetail(animate){
+  const p=plan(sel),box=document.getElementById('detail');box.replaceChildren();
+  const isToday=K(sel)===K(today);
+  box.append(el('h3',null,(isToday?'Hoje, ':'')+(isToday?longDate(sel):cap(longDate(sel)))),el('p','ph',p.ph));
+  box.append(el('span','tag '+TY[p.t][1],TY[p.t][0]),el('p','x',p.x));
+  p.n.forEach(s=>box.append(el('p','n',s)));
+  if(animate){box.classList.remove('swap');void box.offsetWidth;box.classList.add('swap')}
+}
+
+function mmss(s){return s<60?s+' s':Math.floor(s/60)+"'"+String(s%60).padStart(2,'0')+'"'}
+
+function renderResults(){
+  const abOut=document.getElementById('abOut'),rOut=document.getElementById('rOut');
+  abOut.replaceChildren();rOut.replaceChildren();
+  if(typeof res.ab==='number'){
+    const d=36-res.ab,v=el('div','verdict '+(d<=0?'ok':'warn'));
+    if(d<=0)v.textContent=res.ab+' repetições: acima do mínimo de 36. Mantenha a cadência e não mude o treino.';
+    else if(d<=6)v.textContent=res.ab+' repetições: faltam '+d+' para o mínimo. Dá para fechar essa diferença em 20 dias com blocos de 30 s quase todo dia.';
+    else v.textContent=res.ab+' repetições: faltam '+d+' para o mínimo de 36. É a sua maior prioridade. Faça 4 blocos de 30 s por dia, contando sempre, e cuide da técnica antes da velocidade.';
+    abOut.append(v);
+  }
+  if(typeof res.r==='number'){
+    const s=res.r,kmh=Math.round(2400/s*3.6*10)/10,volta=Math.round(s/6);
+    const v=el('div','verdict '+(s<=780?'ok':'warn'));
+    let txt=mmss(s)+' = '+String(kmh).replace('.',',')+' km/h, '+mmss(volta)+' por volta de 400 m. ';
+    if(s<=720)txt+='Dentro da meta de 12\'00". Mantenha os tiros a 11,5 km/h e foque no abdominal.';
+    else if(s<=780)txt+='Passa no limite de 13\'00", mas sem folga. Faça os tiros de 400 m a '+String(Math.round((kmh+0.6)*10)/10).replace('.',',')+' km/h para criar margem.';
+    else{const falta=s-780;txt+='Acima do limite de 13\'00" por '+mmss(falta)+'. Faça os tiros de 400 m a '+String(Math.round((kmh+0.8)*10)/10).replace('.',',')+' km/h e suba 0,3 km/h por semana. Me mande esse número no chat para eu reajustar o plano.'}
+    v.textContent=txt;rOut.append(v);
+  }
+  document.getElementById('clearBtn').hidden=!(typeof res.ab==='number'||typeof res.r==='number');
+}
+
+function lsGet(){try{return JSON.parse(localStorage.getItem(LSK)||'{}')}catch(e){return{}}}
+function lsSet(v){try{localStorage.setItem(LSK,JSON.stringify(v))}catch(e){}}
+
+res=lsGet();
+if(typeof res.ab==='number')document.getElementById('abInput').value=res.ab;
+if(typeof res.r==='number'){document.getElementById('rmInput').value=Math.floor(res.r/60);document.getElementById('rsInput').value=res.r%60}
+sel=today<MIN?MIN:today>MAX?MAX:today;
+cm=new Date(sel.getFullYear(),sel.getMonth(),1);
+renderHero();renderCal();renderResults();
+
+document.getElementById('grid').addEventListener('click',e=>{
+  const b=e.target.closest('button[data-k]');if(!b)return;
+  sel=parse(b.dataset.k);
+  document.querySelectorAll('#grid button[data-k]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));
+  renderDetail(true);
+});
+document.getElementById('prevBtn').addEventListener('click',()=>{const c=new Date(cm.getFullYear(),cm.getMonth()-1,1);if(c>=new Date(2026,10,1)){cm=c;renderCal()}});
+document.getElementById('nextBtn').addEventListener('click',()=>{const c=new Date(cm.getFullYear(),cm.getMonth()+1,1);if(c<=new Date(2026,11,1)){cm=c;renderCal()}});
+document.getElementById('todayBtn').addEventListener('click',()=>{sel=today<MIN?MIN:today>MAX?MAX:today;cm=new Date(sel.getFullYear(),sel.getMonth(),1);renderCal();renderDetail(true)});
+
+document.getElementById('abSave').addEventListener('click',()=>{
+  const err=document.getElementById('abErr'),v=parseInt(document.getElementById('abInput').value,10);
+  if(!(v>=0&&v<=120)){err.textContent='Digite quantas repetições você fez em 1 minuto.';return}
+  err.textContent='';res.ab=v;lsSet(res);renderResults();
+});
+document.getElementById('rSave').addEventListener('click',()=>{
+  const err=document.getElementById('rErr');
+  const m=parseInt(document.getElementById('rmInput').value,10),s=parseInt(document.getElementById('rsInput').value,10);
+  if(!(m>=5&&m<=30)||!(s>=0&&s<=59)){err.textContent='Digite o tempo em minutos e segundos, por exemplo 13 e 20.';return}
+  err.textContent='';res.r=m*60+s;lsSet(res);renderResults();
+});
+document.getElementById('clearBtn').addEventListener('click',()=>{
+  res={};lsSet(res);
+  ['abInput','rmInput','rsInput'].forEach(i=>document.getElementById(i).value='');
+  renderResults();
+});
+</script>
+</body>
+</html>
